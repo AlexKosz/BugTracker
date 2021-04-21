@@ -16,15 +16,15 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1>{{g.user.name}}'s Projects</h1>
+                <h1>BUG</h1>
             </div>
             <div class="col-9">
 
                 <div class="card text-center" id="createNewProject" style="margin-bottom: 20px; margin-top: 20px;">
                     <div class="card-body">
-                        <h5 class="card-title">Create a new project!</h5>
-                        <p class="card-text">Add a new project to your list so you can track your bugs!</p>
-                        <a href="#" class="btn btn-primary">Create Project</a>
+                        <h5 class="card-title">Found another bug?</h5>
+                        <p class="card-text">Add a new bug to your list so you dont forget!</p>
+                        <a href="#" class="btn btn-primary">Add bug</a>
                     </div>
                 </div>
 
@@ -32,38 +32,46 @@
 
 
 
-                    {% if ((projects|length) == 0) %}
+                    {% if ((bugs|length) == 0) %}
                     <div class="card" class="project">
 
                         <div class="card-body">
-                            <h5 class="card-title">You have no projects yet.</h5>
-                            <p class="card-text">Create one now
+                            <h5 class="card-title">No bugs listed yet</h5>
+                            <p class="card-text">Add one now?
                             </p>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                         </div>
                     </div>
                     {% endif %}
 
-                    {% for x in range (0, projects| length) %}
+                    {% for x in range (0, bugs| length) %}
                     <div class="card" class="project" style="margin-bottom: 20px;">
-                        {% if ((projects[x]['finished']) == 0) %}
+                        {% if ((bugs[x]['Solved']) == 0) %}
                         <div class="card-header bg-info text-white">
                             In progress
                         </div>
                         {% endif %}
-                        {% if ((projects[x]['finished']) == 1) %}
+                        {% if ((bugs[x]['Solved']) == 1) %}
                         <div class="card-header bg-success text-white">
-                            Finished
+                            Solved
                         </div>
                         {% endif %}
 
 
 
                         <div class="card-body">
-                            <h4 class="card-title">{{projects[x]['name']}}</h4>
-                            <p class="card-text">{{projects[x]['scope']}}
-                            </p>
-                            <a href="/project/{{projects[x]['id']}}" class="btn btn-primary">View</a>
+                            <h3 class="card-title">{{bugs[x]['Code']}}</h3>
+                            <h5>{{bugs[x]['description']}}</h5>
+                            <h5>Cause: </h5>
+                            <p class="card-text">{{bugs[x]['cause']}}</p>
+                            {% if ((bugs[x]['Solved']) == 1) %}
+                            <h5>Solution: </h5>
+                            <p class="card-text">{{bugs[x]['solution']}}</p>
+                            <a href="#" class="btn btn-primary">Delete</a>
+                            {% endif %}
+                            {% if ((bugs[x]['Solved']) == 0) %}
+                            <a href="#" class="btn btn-primary">Resolve</a>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}

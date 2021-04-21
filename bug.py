@@ -25,8 +25,9 @@ def before_request():
             }
         user = mysql.query_db(query, data)
         user = user[0]
-        print (user)
+        session['user']=user
         g.user = user
+        
         
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -44,7 +45,6 @@ def login():
         responses = mysql.query_db('SELECT * FROM users')
         for x in range (len(responses)):
             users.append(responses[x])
-        print(users)
 
         for x in range (len(users)):
             if (users[x]['username'] == username):
@@ -55,12 +55,6 @@ def login():
                 else:
                     print("invalid password")
         return redirect(url_for('login')) 
-
-
-
-
-
-        
     return render_template('login.html')
 
 
@@ -72,9 +66,7 @@ def register():
         password = request.form['password']
         githubProf = request.form['githubProf']
         name = request.form['name']
-
         mysql = connectToMySQL('bugTracker')
-
         query='INSERT INTO users (username, password, githubProf, name) VALUES (%(username)s, %(password)s, %(githubProf)s, %(name)s);'
         data = {
             "username": request.form['username'],
@@ -84,22 +76,42 @@ def register():
             }
             
         mysql.query_db(query, data)
-
-
-
-
-
-
         return redirect(url_for('login'))
 
     return render_template('register.html')
 
 @app.route('/profile')
 def profile():
+        projects = []
+        mysql = connectToMySQL('bugTracker')
+        query='SELECT * FROM projects WHERE user_ID=%(user_ID)s;'
+        data = {
+            "user_ID": session['user']['id']
+            }   
+        
+        projects = mysql.query_db(query, data)
+        return render_template('profile.html', projects=projects)
 
 
-    return render_template('profile.html')
+@app.route('/project/<project_id>')
+def project(project_id):
+        session.pop('project', None)
+        mysql = connectToMySQL('bugTracker')
+        query='SELECT * FROM projects WHERE id=%(project_id)s;'
+        data = {
+            "project_id": project_id
+            }   
+            
+        project = mysql.query_db(query, data)[0]
 
+        mysql = connectToMySQL('bugTracker')
+        query='SELECT * FROM bugs WHERE project_id=%(project_id)s;'
+        data = {
+            "project_id": project['id']
+            }   
+        bugs = mysql.query_db(query, data)
+        print(project, bugs)
+        return render_template('project.html', project=project, bugs=bugs)
 
 
 
