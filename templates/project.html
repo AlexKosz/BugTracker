@@ -44,7 +44,7 @@
                     </div>
                     {% endif %}
 
-                    {% for x in range (0, bugs| length) %}
+                    {% for x in range (bugs| length -1, -1, -1) %}
                     <div class="card" class="project" style="margin-bottom: 20px;">
                         {% if ((bugs[x]['Solved']) == 0) %}
                         <div class="card-header bg-info text-white">
@@ -70,7 +70,7 @@
                             <a href="/deleteBug/{{bugs[x]['id']}}" class="btn btn-danger">Delete</a>
                             {% endif %}
                             {% if ((bugs[x]['Solved']) == 0) %}
-                            <a href="#" class="btn btn-success">Resolve</a>
+                            <a href="/resolveBug/{{bugs[x]['id']}}" class="btn btn-success">Resolve</a>
                             {% endif %}
                         </div>
                     </div>

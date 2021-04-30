@@ -197,8 +197,6 @@ def deleteProject(project_id):
 
 @app.route('/deleteBug/<bug_id>')
 def deleteBug(bug_id):    
-    print("delete")   
-
     mysql = connectToMySQL('bugTracker')
     query='DELETE FROM bugs WHERE id=%(bug_id)s;'
     data = {
@@ -209,6 +207,31 @@ def deleteBug(bug_id):
 
 
 
+@app.route('/resolveBug/<bug_id>', methods=['GET', 'POST'])
+def resolveBug(bug_id): 
+        bug = []
+        mysql = connectToMySQL('bugTracker')
+        query='SELECT * FROM bugs WHERE id=%(bug_id)s;'
+        data = {
+            "bug_id": bug_id
+            }     
+        bug = mysql.query_db(query, data)  
+        bug = bug[0]
+        if request.method == 'POST':
+            cause = request.form['cause']
+            solution = request.form['solution']
+            user_id = session['user_id']
+            mysql = connectToMySQL('bugTracker')
+            query='UPDATE bugs SET cause = %(cause)s, solution = %(solution)s, solved = %(solved)s WHERE id = %(bug_id)s;'
+            data = {
+                "cause": cause,
+                "solution": solution,
+                "solved": 1,
+                "bug_id": bug_id
+                }
+            mysql.query_db(query, data)
+            return redirect(url_for('project', project_id=session['project_id']))
+        return render_template('resovleBug.html', bug=bug)
 
 
 

@@ -44,7 +44,7 @@
                     </div>
                     {% endif %}
 
-                    {% for x in range (0, projects| length) %}
+                    {% for x in range (projects| length -1, -1, -1) %}
                     <div class="card" class="project" style="margin-bottom: 20px;">
                         {% if ((projects[x]['finished']) == 0) %}
                         <div class="card-header bg-info text-white">

@@ -1,0 +1,24 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/resolveBug.css') }}">
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <p class="sign" align="center">Resolve Bug</p>
+        <p class="sign" align="center">Code:{{bug['Code']}}</p>
+        <p class="sign" align="center">Description:{{bug['description']}}</p>
+        <form method="POST" class="form1">
+            <input type="text" name="cause" align="center" placeholder="What caused it?">
+            <input type="text" name="solution" align="center" placeholder="How'd you fix it?">
+            <button align="center" type="submit" class="submit">
+                Mark solved
+            </button>
+            <p class="forgot" align="center"><a href="/profile">Cancel</p>
+        </form>
+    </div>
+</body>
+
+</html>
