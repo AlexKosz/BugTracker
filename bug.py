@@ -57,6 +57,10 @@ def login():
         return redirect(url_for('login')) 
     return render_template('login.html')
 
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.clear()
+    return redirect('/')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -83,6 +87,8 @@ def register():
 
 @app.route('/newProj', methods=['GET', 'POST'])
 def newProj():
+    if session.get('user_id') is None:
+        return redirect('/')
     if request.method == 'POST':
         name = request.form['name']
         scope = request.form['scope']
@@ -109,6 +115,8 @@ def newProj():
 
 @app.route('/newBug', methods=['GET', 'POST'])
 def newBug():
+    if session.get('user_id') is None:
+        return redirect('/')
     if request.method == 'POST':
         code = request.form['code']
         description = request.form['description']
@@ -138,6 +146,8 @@ def newBug():
 
 @app.route('/profile')
 def profile():
+        if session.get('user_id') is None:
+            return redirect('/')
         projects = []
         mysql = connectToMySQL('bugTracker')
         query='SELECT * FROM projects WHERE user_ID=%(user_ID)s;'
@@ -146,11 +156,23 @@ def profile():
             }   
         
         projects = mysql.query_db(query, data)
-        return render_template('profile.html', projects=projects)
+
+        mysql = connectToMySQL('bugTracker')
+        query='SELECT * FROM bugs WHERE user_id=%(user_ID)s;'
+        data = {
+            "user_ID": session['user']['id']
+            }   
+        bugs = mysql.query_db(query, data)
+
+
+
+        return render_template('profile.html', projects=projects, bugs=bugs)
 
 
 @app.route('/project/<project_id>')
 def project(project_id):
+        if session.get('user_id') is None:
+            return redirect('/')
         session.pop('project', None)
         session['project_id'] = project_id
         mysql = connectToMySQL('bugTracker')
@@ -174,7 +196,7 @@ def project(project_id):
 
 @app.route('/deleteProject/<project_id>')
 def deleteProject(project_id):    
-    print("delete")   
+  
 
     mysql = connectToMySQL('bugTracker')
     query='DELETE FROM projects WHERE id=%(project_id)s;'
@@ -182,7 +204,6 @@ def deleteProject(project_id):
         "project_id": project_id
         }     
     mysql.query_db(query, data)      
-    print("done with db")
 
     mysql = connectToMySQL('bugTracker')
     query='DELETE FROM bugs WHERE project_id=%(project_id)s;'
@@ -208,7 +229,9 @@ def deleteBug(bug_id):
 
 
 @app.route('/resolveBug/<bug_id>', methods=['GET', 'POST'])
-def resolveBug(bug_id): 
+def resolveBug(bug_id):
+        if session.get('user_id') is None:
+            return redirect('/')
         bug = []
         mysql = connectToMySQL('bugTracker')
         query='SELECT * FROM bugs WHERE id=%(bug_id)s;'

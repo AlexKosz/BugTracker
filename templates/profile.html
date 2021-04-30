@@ -16,7 +16,16 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1>{{g.user.name}}'s Projects</h1>
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Hello, {{session['user']['name']}}</h5>
+                        <p class="card-text">You have {{projects|length}} projects</p>
+                        <p class="card-text">You have {{bugs|length}} unsolved bugs</p>
+                        <a href="https://{{session['user']['githubProf']}}" target="_blank" class="btn btn-primary">Your
+                            github</a>
+                        <a href="logout" class="btn btn-danger">Logout</a>
+                    </div>
+                </div>
             </div>
             <div class="col-9">
 
