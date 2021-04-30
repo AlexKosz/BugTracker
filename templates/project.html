@@ -24,7 +24,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Found another bug?</h5>
                         <p class="card-text">Add a new bug to your list so you dont forget!</p>
-                        <a href="#" class="btn btn-primary">Add bug</a>
+                        <a href="/newBug" class="btn btn-primary">Add bug</a>
                     </div>
                 </div>
 
@@ -39,7 +39,7 @@
                             <h5 class="card-title">No bugs listed yet</h5>
                             <p class="card-text">Add one now?
                             </p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                            <a href="/newBug" class="btn btn-primary">Add your first bug!</a>
                         </div>
                     </div>
                     {% endif %}
@@ -67,10 +67,10 @@
                             {% if ((bugs[x]['Solved']) == 1) %}
                             <h5>Solution: </h5>
                             <p class="card-text">{{bugs[x]['solution']}}</p>
-                            <a href="#" class="btn btn-primary">Delete</a>
+                            <a href="/deleteBug/{{bugs[x]['id']}}" class="btn btn-danger">Delete</a>
                             {% endif %}
                             {% if ((bugs[x]['Solved']) == 0) %}
-                            <a href="#" class="btn btn-primary">Resolve</a>
+                            <a href="#" class="btn btn-success">Resolve</a>
                             {% endif %}
                         </div>
                     </div>

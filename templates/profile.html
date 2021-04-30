@@ -24,7 +24,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Create a new project!</h5>
                         <p class="card-text">Add a new project to your list so you can track your bugs!</p>
-                        <a href="#" class="btn btn-primary">Create Project</a>
+                        <a href="/newProj" class="btn btn-primary">Create Project</a>
                     </div>
                 </div>
 
@@ -64,6 +64,7 @@
                             <p class="card-text">{{projects[x]['scope']}}
                             </p>
                             <a href="/project/{{projects[x]['id']}}" class="btn btn-primary">View</a>
+                            <a href="/deleteProject/{{projects[x]['id']}}" class="btn btn-danger">Delete</a>
                         </div>
                     </div>
                     {% endfor %}
