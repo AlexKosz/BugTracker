@@ -11,6 +11,15 @@
 
 <body>
     <div class="main">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert" align="center" style="color: red">
+            <p>{{message}}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
         <p class="sign" align="center">Register</p>
         <form method="POST" class="form1">
 

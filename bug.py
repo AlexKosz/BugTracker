@@ -1,15 +1,83 @@
 import requests
 import json
-from flask import Flask, g, render_template, request, redirect, session, url_for  
+from flask import Flask, g, render_template, request, redirect, session, url_for, flash  
 from mysqlconnection import connectToMySQL
 
 
 
+def validate_user(user):
+    is_valid = False
+    mysql = connectToMySQL('bugTracker')
+    responses = mysql.query_db('SELECT * FROM users')
+    for x in range (len(responses)):
+        users.append(responses[x])
+    for x in range (len(users)):
+        if (users[x]['username'] == session['username']):
+            print("found user")
+            if(users[x]['password'] == session['password']):
+                session['user_id'] = users[x]['id']
+                is_valid = True
+                return is_valid
+            else:
+                  flash("Invalid Password")
+                  return is_valid
+    flash("Invalid Username and/or Password")
+    return is_valid
+    
+
+def validate_registration(user):
+    is_valid = True
+    print(user)
+    if user['name'] == "" or user['password'] == "" or user['username'] == "" or user['githubProf'] == "":
+        flash("All fields must be present")
+        is_valid = False
+
+    if len(user['name'])<2:
+        flash("First name must be at least 2 characters long")
+        is_valid = False
+
+    if len(user['password']) < 8:
+        flash("password must be at least 8 characters long")
+        is_valid = False
+
+    if user['githubProf'].startswith('http') :
+        flash("Do not include https on your github link")
+        is_valid = False
+    return is_valid
+
+def validate_project(project):
+    is_valid = True
+    if project['name'] == "" or project['scope'] == "" or project['lang'] == "" or project['githubLink'] == "":
+        flash("All fields must be present")
+        is_valid = False
+
+    if len(project['name'])<2:
+        flash("Name must be at least 2 characters long")
+        is_valid = False
+
+    if len(project['scope']) < 8:
+        flash("Description must be at least 5 characters long")
+        is_valid = False
+
+    if len(project['lang']) < 8:
+        flash("Description must be at least 2 characters long")
+        is_valid = False
+
+
+
+
+    if project['githubLink'].startswith('http') :
+        flash("Do not include https on your github link")
+        is_valid = False
+    return is_valid
+
+
+
+
+
+
+
 users = []
-
-
-
-
 app = Flask(__name__)    
 app.secret_key = 'secKey'
 
@@ -39,22 +107,12 @@ def index():
 def login():
     if request.method == 'POST':
         session.pop('user_id', None)
-        username = request.form['username']
-        password = request.form['password']
-        mysql = connectToMySQL('bugTracker')
-        responses = mysql.query_db('SELECT * FROM users')
-        for x in range (len(responses)):
-            users.append(responses[x])
-
-        for x in range (len(users)):
-            if (users[x]['username'] == username):
-                print("found user")
-                if(users[x]['password'] == password):
-                    session['user_id'] = users[x]['id']
-                    return redirect(url_for('profile'))
-                else:
-                    print("invalid password")
-        return redirect(url_for('login')) 
+        session['username'] = request.form['username']
+        session['password'] = request.form['password']
+        is_valid = validate_user(request.form)
+        if not is_valid:
+            return redirect(url_for('login'))
+        return redirect(url_for('profile'))        
     return render_template('login.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -66,22 +124,20 @@ def logout():
 def register():
     if request.method == 'POST':
         session.pop('user_id', None)
-        username = request.form['username']
-        password = request.form['password']
-        githubProf = request.form['githubProf']
-        name = request.form['name']
-        mysql = connectToMySQL('bugTracker')
-        query='INSERT INTO users (username, password, githubProf, name) VALUES (%(username)s, %(password)s, %(githubProf)s, %(name)s);'
-        data = {
-            "username": request.form['username'],
-            "password": request.form['password'],
-            "githubProf": request.form['githubProf'],
-            "name": request.form['name']
-            }
-            
-        mysql.query_db(query, data)
-        return redirect(url_for('login'))
-
+        is_valid = validate_registration(request.form)
+        print (is_valid)
+        if is_valid:
+            mysql = connectToMySQL('bugTracker')
+            query='INSERT INTO users (username, password, githubProf, name) VALUES (%(username)s, %(password)s, %(githubProf)s, %(name)s);'
+            data = {
+                "username": request.form['username'],
+                "password": request.form['password'],
+                "githubProf": request.form['githubProf'],
+                "name": request.form['name']
+                }
+            mysql.query_db(query, data)
+            return redirect(url_for('login'))
+        return redirect(url_for('register'))    
     return render_template('register.html')
 
 
@@ -90,26 +146,30 @@ def newProj():
     if session.get('user_id') is None:
         return redirect('/')
     if request.method == 'POST':
-        name = request.form['name']
-        scope = request.form['scope']
-        githubLink = request.form['githubLink']
-        lang = request.form['lang']
-        finished = 0
-        user_id = session['user_id']
-        mysql = connectToMySQL('bugTracker')
-        query='INSERT INTO projects (name, scope, lang, githubLink, finished, user_id) VALUES (%(name)s, %(scope)s, %(lang)s, %(githubLink)s, %(finished)s, %(user_id)s);'
-        data = {
-            "name": name,
-            "scope": scope,
-            "lang": lang,
-            "githubLink": githubLink,
-            "finished": finished,
-            "user_id": user_id,
-            }
-            
-        mysql.query_db(query, data)
-        return redirect(url_for('profile'))
 
+
+        is_valid=validate_project(request.form)
+        if is_valid:
+            name = request.form['name']
+            scope = request.form['scope']
+            githubLink = request.form['githubLink']
+            lang = request.form['lang']
+            finished = 0
+            user_id = session['user_id']
+            mysql = connectToMySQL('bugTracker')
+            query='INSERT INTO projects (name, scope, lang, githubLink, finished, user_id) VALUES (%(name)s, %(scope)s, %(lang)s, %(githubLink)s, %(finished)s, %(user_id)s);'
+            data = {
+                "name": name,
+                "scope": scope,
+                "lang": lang,
+                "githubLink": githubLink,
+                "finished": finished,
+                "user_id": user_id,
+                }
+                
+            mysql.query_db(query, data)
+            return redirect(url_for('profile'))
+        return redirect(url_for('newProj'))
     return render_template('newProj.html')
 
 

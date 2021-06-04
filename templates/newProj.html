@@ -7,12 +7,21 @@
 
 <body>
     <div class="main">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert" align="center" style="color: red">
+            <p>{{message}}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
         <p class="sign" align="center">New Project</p>
         <form method="POST" class="form1">
 
             <input type="text" name="name" align="center" placeholder="Project Name">
             <input type="text" name="scope" align="center" placeholder="Description">
-            <input type="text" name="githubLink" placeholder="Github Repo">
+            <input type="text" name="githubLink" placeholder="Github without https://">
             <input type="text" name="lang" placeholder="Language">
             <button align="center" type="submit" class="submit">
                 Create Project
